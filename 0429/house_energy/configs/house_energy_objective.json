@@ -1,0 +1,30 @@
+{
+  "scenario_id": "house_energy_management",
+  "scenario_display": "Building HVAC Energy Management (7 FMU)",
+  "profile": "paper",
+  "objective": "minimize_energy_with_comfort",
+  "description": "Optimize thermostat controller to minimize heating energy while maintaining 18-24 Celsius comfort zone in a 2-room building (30-minute OSP co-simulation).",
+  "param_space": {
+    "controller": {
+      "OvenHeatTransfer": {"min": 2.0,  "max": 18.0, "unit": "W",    "desc": "Heater rated power [W] — lower is more energy efficient"},
+      "T_heatStart":      {"min": 15.0, "max": 20.0, "unit": "degC", "desc": "Heating ON threshold — lower delays heating onset"},
+      "T_heatStop":       {"min": 20.0, "max": 24.0, "unit": "degC", "desc": "Heating OFF threshold — wider deadband saves energy"},
+      "transferTime":     {"min": 5.0,  "max": 60.0, "unit": "s",    "desc": "Thermostat thermal response time constant"}
+    },
+    "room1": {
+      "Tinit_Room1": {"min": 10.0, "max": 18.0, "unit": "degC", "desc": "Room 1 initial temperature"}
+    },
+    "room2": {
+      "Tinit_Room2": {"min": 10.0, "max": 18.0, "unit": "degC", "desc": "Room 2 initial temperature"}
+    },
+    "inner_wall": {
+      "k": {"min": 0.001, "max": 0.02, "unit": "W/K", "desc": "Inner wall thermal conductance — lower k = better inter-room insulation"}
+    },
+    "outer_wall1": {
+      "k_outsidewall": {"min": 0.001, "max": 0.015, "unit": "W/K", "desc": "Outer wall 1 thermal conductance — lower k = better insulation"}
+    },
+    "outer_wall2": {
+      "k_outsidewall": {"min": 0.001, "max": 0.015, "unit": "W/K", "desc": "Outer wall 2 thermal conductance — lower k = better insulation"}
+    }
+  }
+}

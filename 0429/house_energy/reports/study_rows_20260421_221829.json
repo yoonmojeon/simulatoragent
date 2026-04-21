@@ -1,0 +1,227 @@
+[
+  {
+    "seed": 11,
+    "group": "G0_random",
+    "best_risk": 1.1642,
+    "best_comfort_rate": 0.4389,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0031,
+    "n_evals": 12
+  },
+  {
+    "seed": 11,
+    "group": "G1_grid",
+    "best_risk": 1.2304,
+    "best_comfort_rate": 0.3722,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0027,
+    "n_evals": 12
+  },
+  {
+    "seed": 11,
+    "group": "G2_llm_only",
+    "best_risk": 0.479,
+    "best_comfort_rate": 0.525,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.004,
+    "n_evals": 12
+  },
+  {
+    "seed": 11,
+    "group": "G3_reflection",
+    "best_risk": 1.3345,
+    "best_comfort_rate": 0.275,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0095,
+    "n_evals": 12
+  },
+  {
+    "seed": 11,
+    "group": "G4_rag_reflection",
+    "best_risk": 0.0103,
+    "best_comfort_rate": 0.9922,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0026,
+    "n_evals": 12
+  },
+  {
+    "seed": 22,
+    "group": "G0_random",
+    "best_risk": 1.1417,
+    "best_comfort_rate": 0.4633,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.005,
+    "n_evals": 12
+  },
+  {
+    "seed": 22,
+    "group": "G1_grid",
+    "best_risk": 1.2304,
+    "best_comfort_rate": 0.3722,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0027,
+    "n_evals": 12
+  },
+  {
+    "seed": 22,
+    "group": "G2_llm_only",
+    "best_risk": 1.2449,
+    "best_comfort_rate": 0.3606,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0054,
+    "n_evals": 12
+  },
+  {
+    "seed": 22,
+    "group": "G3_reflection",
+    "best_risk": 0.3809,
+    "best_comfort_rate": 0.62,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0009,
+    "n_evals": 12
+  },
+  {
+    "seed": 22,
+    "group": "G4_rag_reflection",
+    "best_risk": 0.0129,
+    "best_comfort_rate": 0.9906,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0035,
+    "n_evals": 12
+  },
+  {
+    "seed": 33,
+    "group": "G0_random",
+    "best_risk": 1.1934,
+    "best_comfort_rate": 0.4133,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0067,
+    "n_evals": 12
+  },
+  {
+    "seed": 33,
+    "group": "G1_grid",
+    "best_risk": 1.2304,
+    "best_comfort_rate": 0.3722,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0027,
+    "n_evals": 12
+  },
+  {
+    "seed": 33,
+    "group": "G2_llm_only",
+    "best_risk": 0.2117,
+    "best_comfort_rate": 0.7933,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.005,
+    "n_evals": 12
+  },
+  {
+    "seed": 33,
+    "group": "G3_reflection",
+    "best_risk": 1.2029,
+    "best_comfort_rate": 0.3994,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0023,
+    "n_evals": 12
+  },
+  {
+    "seed": 33,
+    "group": "G4_rag_reflection",
+    "best_risk": 0.0308,
+    "best_comfort_rate": 0.97,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0008,
+    "n_evals": 12
+  },
+  {
+    "seed": 44,
+    "group": "G0_random",
+    "best_risk": 1.1306,
+    "best_comfort_rate": 0.4717,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0022,
+    "n_evals": 12
+  },
+  {
+    "seed": 44,
+    "group": "G1_grid",
+    "best_risk": 1.2304,
+    "best_comfort_rate": 0.3722,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0027,
+    "n_evals": 12
+  },
+  {
+    "seed": 44,
+    "group": "G2_llm_only",
+    "best_risk": 1.3396,
+    "best_comfort_rate": 0.2667,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0063,
+    "n_evals": 12
+  },
+  {
+    "seed": 44,
+    "group": "G3_reflection",
+    "best_risk": 0.1152,
+    "best_comfort_rate": 0.8856,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0008,
+    "n_evals": 12
+  },
+  {
+    "seed": 44,
+    "group": "G4_rag_reflection",
+    "best_risk": 0.0563,
+    "best_comfort_rate": 0.945,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0013,
+    "n_evals": 12
+  },
+  {
+    "seed": 55,
+    "group": "G0_random",
+    "best_risk": 1.2088,
+    "best_comfort_rate": 0.3967,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0055,
+    "n_evals": 12
+  },
+  {
+    "seed": 55,
+    "group": "G1_grid",
+    "best_risk": 1.2304,
+    "best_comfort_rate": 0.3722,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0027,
+    "n_evals": 12
+  },
+  {
+    "seed": 55,
+    "group": "G2_llm_only",
+    "best_risk": 0.502,
+    "best_comfort_rate": 0.5056,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.0076,
+    "n_evals": 12
+  },
+  {
+    "seed": 55,
+    "group": "G3_reflection",
+    "best_risk": 0.4607,
+    "best_comfort_rate": 0.5433,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.004,
+    "n_evals": 12
+  },
+  {
+    "seed": 55,
+    "group": "G4_rag_reflection",
+    "best_risk": 0.0076,
+    "best_comfort_rate": 0.9944,
+    "best_mean_power_kw": 0.0,
+    "best_energy_ratio": 0.002,
+    "n_evals": 12
+  }
+]
