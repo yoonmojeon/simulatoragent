@@ -1,75 +1,105 @@
-# 0429 Energy LLM Agent (Marine + Energy FMU Co-simulation)
+# 0429 Energy LLM Agent
 
-에너지 저널(ADVEI Special Issue) 투고를 위한 실험 자동화 파이프라인입니다.
+`construction_vessel_full`(9-FMU) 시나리오를 대상으로, LLM 에이전트가
+`FMU inspection → RAG retrieval → code generation → simulation loop → report generation`
+까지 수행하는 실험 파이프라인입니다.
 
-핵심 목표:
-- 해양 + 에너지 FMU 코시뮬레이션(FMPy 기반)
-- LLM 에이전트 스타일 워크플로우(목표 해석 → 코드 생성 → 최적화 → 리포트)
-- 재현 가능한 실험 산출물(JSON/Markdown)
+이 디렉토리는 `0429` 단독으로 동작하며, 외부 `0422` 의존성 없이 실행됩니다.
 
-## 데이터 소스
+## 연구 목적
 
-- OSP demo-cases (marine reference models)
-  - `construction-vessel` (vessel + power_system + thruster + wave/wind + winch)
-  - `lars` (launch and recovery)
-- Non-OSP FMU corpus
-  - `modelica/fmi-cross-check`에서 선별한 에너지/전기 FMU
-  - 위치: `external_fmus/cross_check_energy/`
-    - `Rectifier_CATIA_R2016x.fmu`
-    - `fuelrail_AMESim15.fmu`
-    - `ControlledTemperature_CATIA_R2016x.fmu`
+- 해양+에너지 결합 시스템에서 LLM 기반 자율 최적화 가능성 검증
+- G0~G4 ablation 비교를 통해 제안 방법론(G4: LLM+RAG+Reflection) 평가
+- 논문 투고용 재현 가능한 결과물(JSON, Markdown report) 자동 생성
 
-현재 워크스페이스 기준:
-- FMU 루트: `../demo-cases`
+## 시나리오
 
-## 빠른 시작
+- **Scenario ID:** `construction_vessel_full`
+- **구성 FMU:** wave model, wind model, vessel model, reference model, DP controller,
+  thrust allocator, thruster model, power system, winch
+- **목표:** crane depth 추종을 유지하면서 power violation 기반 risk 최소화
+
+## 핵심 파일
+
+- `llm_agent.py`
+  - OpenAI/Ollama tool-calling 기반 메인 에이전트
+  - 툴 스키마(`inspect_fmu`, `query_rag`, `generate_cosim_code`, `run_simulation`, `generate_report`)
+  - G2/G3/G4 모드 로직 및 reflection 체크포인트
+- `run_llm_study.py`
+  - G0~G4 실행 오케스트레이터
+  - 휴리스틱(G0/G1) + 실제 LLM 에이전트(G2/G3/G4) 통합 실행
+- `mcp_toolset.py`
+  - FMU inspection/RAG retrieval/simulation/reporting 툴 구현
+- `codegen.py`
+  - `generated/generated_cosim_runner.py` 자동 생성
+- `fmu_sim.py`, `scenarios.py`
+  - 코시뮬레이션 엔진/시나리오 정의(현재 디렉토리 자체 포함)
+- `rag_store.py`
+  - ChromaDB 기반 vocab + trial memory 저장소
+
+## 실행 환경
+
+- Python 3.10+
+- `pip install -r requirements.txt`
+- `.env` 예시
+  - `OPENAI_BASE_URL=http://127.0.0.1:11434/v1`
+  - `OPENAI_API_KEY=ollama`
+  - `OPENAI_MODEL=qwen3:8b`
+
+## 실행 방법
+
+### 1) 전체 G0~G4 재실험
 
 ```powershell
 cd c:\Users\rlaeh\OneDrive\Desktop\mo\0429\energy_llm_agent
-python agent_pipeline.py --goal "연료/전력 위반을 줄이면서 안전한 DP crane operation" --scenario vessel --budget 10
+python -u run_llm_study.py --groups all --budget 12 --n-trials 3 --seeds 11,22,33
 ```
 
-실행 결과:
-- 생성 코드: `generated/generated_cosim_runner.py`
-- 최적화 로그: `reports/optimization_result_*.json`
-- 자동 보고서: `reports/auto_report_*.md`
-
-## 아키텍처
-
-1. **Orchestrator**
-   - 자연어 목표를 실험 목적함수로 변환
-2. **Co-simulation Code Generator**
-   - 시나리오 실행용 파이썬 코드를 생성
-3. **Parameter Optimizer**
-   - FMU 파라미터 탐색 (랜덤 + 국소 탐색)
-4. **Automatic Report Generator**
-   - 결과를 논문형 Markdown으로 정리
-
-## MCP Toolset 모드
-
-`mcp_toolset.py`에 다음 툴이 포함됩니다.
-- `fmu_inspector`: FMU 변수/메타데이터 추출
-- `rag_retriever`: 로컬 실험 이력 검색(ChromaDB 자리표시자)
-- `simulation_runner`: 생성된 코시뮬 코드 실행
-- `report_generator`: 실험 결과 Markdown 생성
-
-실행:
-```powershell
-python mcp_demo_run.py
-```
-
-## G0~G4 비교 실험
+### 2) G4만 재실험
 
 ```powershell
-python run_study.py --budget 6 --n-trials 1 --seeds 11,22
+python -u run_llm_study.py --groups G4 --budget 12 --n-trials 3 --seeds 11,22,33
 ```
 
-출력:
-- `reports/study_rows_*.json`
-- `reports/study_agg_*.json`
-- `reports/study_report_*.md`
+### 3) 에이전트 단독 실행
 
-## 노트
+```powershell
+python -u llm_agent.py --mode G4 --max-iter 50
+```
 
-- 백엔드는 `0429/energy_llm_agent` 내부 `fmu_sim.py`/`scenarios.py`를 사용합니다.
-- `SIM_PROTOCOL_PROFILE=paper`를 기본 적용해 난이도를 유지합니다.
+## 출력 산출물
+
+- `reports/llm_study_agg_*.json`:
+  - 그룹별 최종 지표 집계(best/mean risk, llm calls, simulations)
+- `reports/llm_study_report_*.md`:
+  - 표 기반 요약 리포트
+- `reports/llm_agent_report_*.md`:
+  - 개별 LLM 최적화 세션 분석 리포트
+- `generated/generated_cosim_runner.py`:
+  - 코드 생성 결과물
+
+## 최신 실험 결과(요약)
+
+최신 집계 파일: `reports/llm_study_agg_20260422_182737.json`
+
+- G0: 0.7986
+- G1: 0.8986
+- G2: 0.0203
+- G3: 0.2032
+- G4: 0.0203
+
+## 메트릭 정의
+
+- `risk_score` (lower is better)
+- `success_rate`
+- `mean_power_kw`
+- `energy_j`
+
+상세 계산식은 `fmu_sim.py`, `scenarios.py`의 profile 설정(`SIM_PROTOCOL_PROFILE=paper`)을 따릅니다.
+
+## 재현성 체크리스트
+
+- `0429/demo-cases` FMU 자산 존재 확인
+- `.env` 모델 설정 확인(`qwen3:8b` 권장)
+- 동일 seed/budget 사용
+- 이전 실험 영향 제거가 필요하면 `reports/*`, `rag_db/*` 정리 후 실행

@@ -1,71 +1,93 @@
-# House Energy Management — LLM Agent Co-simulation (Scenario 2)
+# House Energy Management (Scenario 2)
 
-Building HVAC 에너지 관리 시나리오. 7-FMU OSP 코시뮬레이션으로
-LLM 에이전트(G0–G4 ablation)가 TempController 파라미터를 최적화하여
-에너지 소비 최소화 + 쾌적도(18–24°C) 유지를 동시에 달성.
+7-FMU 건물 HVAC 코시뮬레이션에서 LLM 에이전트가 난방 제어 파라미터를
+탐색/최적화하는 실험 모듈입니다.
 
-## 구조
+이 디렉토리는 `0429` 내부 자산(`demo-cases`, `energy_llm_agent/rag_db`)을 직접 사용합니다.
 
+## 목표
+
+- 에너지 소비를 낮추면서(heater power 최소화)
+- 쾌적 범위(18~24 degC) 유지율을 높이는 파라미터 탐색
+- G0~G4 비교를 통해 LLM/RAG/Reflection 효과 분석
+
+## 주요 파일
+
+- `house_sim.py`
+  - 7-FMU 직접 코시뮬레이션 엔진
+  - Jacobi coupling으로 입력/출력 교환
+  - risk 및 comfort/power 지표 계산
+- `llm_agent_house.py`
+  - house 시나리오용 tool-calling 에이전트
+  - `inspect_scenario`, `query_rag`, `run_simulation`, `generate_report` 툴 루프
+- `run_llm_study_house.py`
+  - G0~G4 통합 실행 오케스트레이터
+- `configs/house_energy_objective.json`
+  - 탐색 파라미터 범위 정의
+
+## FMU 구성
+
+- `Clock`
+- `TempController`
+- `Room1`, `Room2`
+- `InnerWall`
+- `OuterWall1`, `OuterWall2`
+
+연결 관계(요약):
+- room 온도 출력 -> controller 입력
+- controller heater 출력 -> room 입력
+- wall 열전달 출력 -> room 입력
+- room 온도 -> wall 입력
+
+## 최적화 지표
+
+`risk = energy_ratio + comfort_violation + (1 - success) * 0.3`
+
+- `energy_ratio`: 평균 난방 전력 비율(낮을수록 좋음)
+- `comfort_rate`: 두 방이 동시에 쾌적 구간에 있는 비율(높을수록 좋음)
+- `comfort_violation = 1 - comfort_rate`
+- `success = 1` if `comfort_rate >= 0.5` else `0`
+
+## 실행 방법
+
+### 1) 전체 G0~G4 실행
+
+```powershell
+cd c:\Users\rlaeh\OneDrive\Desktop\mo\0429\house_energy
+python -u run_llm_study_house.py --groups all --budget 12 --n-trials 3 --seeds 11,22,33
 ```
-house_energy/
-  house_sim.py          # 7-FMU 코시뮬 엔진 (fmpy, Celsius 단위)
-  run_study.py          # G0–G4 ablation study orchestrator
-  configs/
-    house_energy_objective.json   # 파라미터 공간 정의
-  reports/
-    study_rows_*.json             # 원시 trial 데이터
-    study_agg_*.json              # 집계 통계
-    study_report_*.md             # 자동 보고서
-    paper_ready_summary.md        # 논문용 최종 요약
+
+### 2) G4만 실행
+
+```powershell
+python -u run_llm_study_house.py --groups G4 --budget 12 --n-trials 3 --seeds 11,22,33
 ```
 
-## FMU 코시뮬레이션 구조 (OSP demo-cases/house)
+### 3) 에이전트 단독 실행
 
-```
-Clock ──────────────────→ TempController (T_clock)
-Room1.T_room ───────────→ TempController (T_room1)
-Room2.T_room ───────────→ TempController (T_room2)
-TempController.h_room1 →→ Room1 (h_powerHeater)
-TempController.h_room2 →→ Room2 (h_powerHeater)
-InnerWall.h_wall ───────→ Room1 (h_InnerWall)
-InnerWall.h_wall ───────→ Room2 (h_InnerWall)
-OuterWall1.h_wall ──────→ Room1 (h_OuterWall)
-OuterWall2.h_wall ──────→ Room2 (h_OuterWall)
-Room1.T_room ───────────→ InnerWall / OuterWall1
-Room2.T_room ───────────→ InnerWall / OuterWall2
+```powershell
+python -u llm_agent_house.py --mode G4 --max-iter 50
 ```
 
-## 최적화 목표
+## 최신 결과
 
-**Risk** = energy_ratio + comfort_violation + (1−sr)×0.3
+최신 집계 파일: `reports/llm_study_agg_20260422_182737.json`
 
-- `energy_ratio` = mean_heater_power / (2×20W) — 낮을수록 에너지 효율
-- `comfort_violation` = 1 − comfort_rate — 쾌적 이탈 비율
-- `sr` = comfort_rate ≥ 0.5 성공 여부
+- G0: 1.1664
+- G1: 1.2304
+- G2: 1.1681
+- G3: 0.3212
+- G4: 0.2508
 
-## 실험 실행
+현재 run 기준으로는 G4가 house 시나리오에서 최저 risk를 기록합니다.
 
-```bash
-# 기본 (budget=12, n_trials=2, 5 seeds)
-python run_study.py
+## 출력 파일
 
-# 커스텀
-python run_study.py --budget 15 --n-trials 3 --seeds "11,22,33"
-```
+- `reports/llm_study_agg_*.json`
+- `reports/llm_study_report_*.md`
+- `reports/llm_agent_report_*.md`
 
-## 결과 요약 (budget=12, n_trials=2, 5 seeds)
+## 경로 의존성
 
-| Group | mean risk ↓ | std ↓ | comfort ↑ |
-|---|---:|---:|---:|
-| G0 Random | 1.1677 | 0.0297 | 0.437 |
-| G1 Grid | 1.2304 | 0.0000 | 0.372 |
-| G2 LLM-only | 0.7554 | 0.4510 | 0.490 |
-| G3 LLM+Reflection | 0.6988 | 0.4810 | 0.545 |
-| **G4 LLM+RAG+Reflection** | **0.0236** | **0.0183** | **0.978** |
-
-→ G4가 G0 대비 **98% 리스크 감소**, 쾌적도 **97.8%** 달성
-
-## 의존성
-
-FMU 경로: `../demo-cases/house/`  
-RAG DB: `../energy_llm_agent/rag_db/` (공유)
+- FMU 경로: `../demo-cases/house/`
+- RAG DB: `../energy_llm_agent/rag_db/`
