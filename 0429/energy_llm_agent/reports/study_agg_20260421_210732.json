@@ -1,0 +1,47 @@
+[
+  {
+    "group": "G0_random",
+    "n": 5,
+    "mean_best_risk": 1.155,
+    "std_best_risk": 0.076,
+    "min_best_risk": 1.0814,
+    "mean_success_rate": 0.0,
+    "mean_power_kw": 284.6
+  },
+  {
+    "group": "G1_grid",
+    "n": 5,
+    "mean_best_risk": 1.2271,
+    "std_best_risk": 0.0,
+    "min_best_risk": 1.2271,
+    "mean_success_rate": 0.0,
+    "mean_power_kw": 285.6
+  },
+  {
+    "group": "G2_llm_only",
+    "n": 5,
+    "mean_best_risk": 1.158,
+    "std_best_risk": 0.0549,
+    "min_best_risk": 1.08,
+    "mean_success_rate": 0.0,
+    "mean_power_kw": 287.6
+  },
+  {
+    "group": "G3_reflection",
+    "n": 5,
+    "mean_best_risk": 1.1844,
+    "std_best_risk": 0.2018,
+    "min_best_risk": 0.9531,
+    "mean_success_rate": 0.2,
+    "mean_power_kw": 6615.9
+  },
+  {
+    "group": "G4_rag_reflection",
+    "n": 5,
+    "mean_best_risk": 1.0833,
+    "std_best_risk": 0.0067,
+    "min_best_risk": 1.08,
+    "mean_success_rate": 0.0,
+    "mean_power_kw": 275.4
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "group": "G0_random",
+    "type": "heuristic",
+    "mean_best_risk": 0.7986,
+    "std_best_risk": 0.0702,
+    "min_best_risk": 0.7028,
+    "n_seeds": 3
+  },
+  {
+    "group": "G1_grid",
+    "type": "heuristic",
+    "mean_best_risk": 0.9116,
+    "std_best_risk": 0.0,
+    "min_best_risk": 0.9116,
+    "n_seeds": 3
+  }
+]

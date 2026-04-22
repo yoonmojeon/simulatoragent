@@ -1,0 +1,5 @@
+__pycache__/
+rag_db/
+*.fmu_extracted/
+external_fmus/
+demo-cases/

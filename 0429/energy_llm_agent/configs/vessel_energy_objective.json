@@ -1,0 +1,14 @@
+{
+  "scenario_alias": "vessel",
+  "scenario_id": "construction_vessel_full",
+  "profile": "paper",
+  "objective": "minimize_risk",
+  "safety_gate": {
+    "max_risk": 2.0,
+    "min_success_rate": 0.0
+  },
+  "tunable_focus": {
+    "wave_model": ["wave_height", "peak_frequency", "k_down", "k_north", "k_east"],
+    "winch": ["K_p", "K_d", "K_i"]
+  }
+}
