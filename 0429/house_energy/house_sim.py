@@ -34,7 +34,7 @@ try:
 except ImportError:
     raise ImportError("fmpy 가 설치되어 있지 않습니다: pip install fmpy")
 
-_DEMO = Path(__file__).resolve().parents[2] / "0422" / "simulatoragent" / "demo-cases-master" / "house"
+_DEMO = Path(__file__).resolve().parents[1] / "demo-cases" / "house"
 
 OUTSIDE_TEMP    = 5.0       # °C
 COMFORT_LOW     = 18.0      # °C

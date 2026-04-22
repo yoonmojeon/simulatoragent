@@ -71,5 +71,5 @@ python run_study.py --budget 6 --n-trials 1 --seeds 11,22
 
 ## 노트
 
-- 백엔드는 `0422/simulatoragent`의 `CoSimRunner`/`get_scenario`를 재사용합니다.
+- 백엔드는 `0429/energy_llm_agent` 내부 `fmu_sim.py`/`scenarios.py`를 사용합니다.
 - `SIM_PROTOCOL_PROFILE=paper`를 기본 적용해 난이도를 유지합니다.

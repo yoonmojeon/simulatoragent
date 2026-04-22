@@ -244,8 +244,7 @@ def _exec_inspect_fmu(args: dict) -> str:
     from mcp_toolset import fmu_inspector
     fmu_name = args["fmu_name"]
     # 시나리오에서 FMU 경로 찾기
-    base = ROOT.parents[1] / "0422" / "simulatoragent"
-    sys.path.insert(0, str(base))
+    sys.path.insert(0, str(ROOT))
     from scenarios import get_scenario
     try:
         sc = get_scenario("construction_vessel_full")
@@ -322,7 +321,12 @@ def _exec_generate_code(args: dict) -> str:
 
 def _exec_run_simulation(args: dict) -> str:
     from mcp_toolset import simulation_runner
-    params = args.get("params", {})
+    params = args.get("params", {}) or {}
+    # Normalize FMU aliases so LLM naming variance does not silently drop overrides.
+    if "linearized_wave_model" in params and "wave_model" not in params:
+        params["wave_model"] = params.pop("linearized_wave_model")
+    if "dp_reference_model" in params and "reference_model" not in params:
+        params["reference_model"] = params.pop("dp_reference_model")
     n_trials = args.get("n_trials", 3)
     result = simulation_runner(params=params, n_trials=n_trials)
     _trial_history.append({"params": params, "result": result})
@@ -552,6 +556,7 @@ Start by inspecting the key FMUs, then generate code, then optimize systematical
     n_llm_calls    = 0
     done_reason    = "max_iterations"
     report_path    = ""
+    min_sims_before_report = 12 if mode == "G4" else 4
 
     if verbose:
         print(f"\n{'='*60}")
@@ -622,6 +627,19 @@ Start by inspecting the key FMUs, then generate code, then optimize systematical
 
             # 보고서 생성 감지
             if name == "generate_report":
+                if n_simulations < min_sims_before_report:
+                    result_str = json.dumps({
+                        "error": (
+                            f"Too early to report: {n_simulations} simulations completed, "
+                            f"need at least {min_sims_before_report}."
+                        )
+                    })
+                    tool_results.append({
+                        "role": "tool",
+                        "tool_call_id": tc.id,
+                        "content": result_str,
+                    })
+                    continue
                 try:
                     r = json.loads(result_str)
                     report_path = r.get("path", "")

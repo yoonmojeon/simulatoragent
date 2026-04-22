@@ -140,8 +140,7 @@ class RagStore:
             metas.append({"term": term, "fmu": fmu})
 
         # FMU 파일에서 변수명 추출해 추가
-        base = ROOT.parents[1] / "0422" / "simulatoragent"
-        sys.path.insert(0, str(base))
+        sys.path.insert(0, str(ROOT))
         try:
             from scenarios import SCENARIOS
             from fmpy import read_model_description as rmd

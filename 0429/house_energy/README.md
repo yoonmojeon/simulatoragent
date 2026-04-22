@@ -67,5 +67,5 @@ python run_study.py --budget 15 --n-trials 3 --seeds "11,22,33"
 
 ## 의존성
 
-FMU 경로: `../../0422/simulatoragent/demo-cases-master/house/`  
+FMU 경로: `../demo-cases/house/`  
 RAG DB: `../energy_llm_agent/rag_db/` (공유)

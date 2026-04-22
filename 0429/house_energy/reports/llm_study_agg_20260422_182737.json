@@ -1,0 +1,63 @@
+[
+  {
+    "group": "G0_random",
+    "type": "heuristic",
+    "mean_best_risk": 1.1664,
+    "std_best_risk": 0.0212,
+    "min_best_risk": 1.1417,
+    "n_seeds": 3
+  },
+  {
+    "group": "G1_grid",
+    "type": "heuristic",
+    "mean_best_risk": 1.2304,
+    "std_best_risk": 0.0,
+    "min_best_risk": 1.2304,
+    "n_seeds": 3
+  },
+  {
+    "group": "G2_llm_only",
+    "type": "llm_agent",
+    "model": "qwen3:8b",
+    "mode": "G2",
+    "n_simulations": 27,
+    "n_reflections": 0,
+    "n_llm_calls": 28,
+    "n_findings": 0,
+    "best_risk": 1.1681,
+    "mean_risk": 1.2975,
+    "report_path": "",
+    "done_reason": "max_iterations",
+    "elapsed_s": 618.6
+  },
+  {
+    "group": "G3_reflection",
+    "type": "llm_agent",
+    "model": "qwen3:8b",
+    "mode": "G3",
+    "n_simulations": 5,
+    "n_reflections": 1,
+    "n_llm_calls": 8,
+    "n_findings": 1,
+    "best_risk": 0.3212,
+    "mean_risk": 0.531,
+    "report_path": "C:\\Users\\rlaeh\\OneDrive\\Desktop\\mo\\0429\\house_energy\\reports\\llm_agent_report_20260422_184325.md",
+    "done_reason": "report_generated",
+    "elapsed_s": 230.5
+  },
+  {
+    "group": "G4_rag_reflection",
+    "type": "llm_agent",
+    "model": "qwen3:8b",
+    "mode": "G4",
+    "n_simulations": 12,
+    "n_reflections": 4,
+    "n_llm_calls": 21,
+    "n_findings": 4,
+    "best_risk": 0.2508,
+    "mean_risk": 0.4218,
+    "report_path": "C:\\Users\\rlaeh\\OneDrive\\Desktop\\mo\\0429\\house_energy\\reports\\llm_agent_report_20260422_185114.md",
+    "done_reason": "report_generated",
+    "elapsed_s": 471.1
+  }
+]

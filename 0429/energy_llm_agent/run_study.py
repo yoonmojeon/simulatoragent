@@ -19,9 +19,6 @@ from pathlib import Path
 from statistics import mean, pstdev
 
 ROOT = Path(__file__).resolve().parent
-BASE_SIM = ROOT.parents[1] / "0422" / "simulatoragent"
-# ROOT 먼저 → 0429 패키지가 0422 동명 모듈보다 우선됨
-sys.path.insert(0, str(BASE_SIM))
 sys.path.insert(0, str(ROOT))
 
 os.environ["SIM_PROTOCOL_PROFILE"] = "paper"

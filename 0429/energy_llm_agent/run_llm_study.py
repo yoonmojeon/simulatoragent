@@ -25,10 +25,8 @@ from pathlib import Path
 from statistics import mean, pstdev
 
 ROOT = Path(__file__).resolve().parent
-BASE_SIM = ROOT.parents[1] / "0422" / "simulatoragent"
 
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(BASE_SIM))
 
 os.environ.setdefault("SIM_PROTOCOL_PROFILE", "paper")
 
@@ -110,14 +108,56 @@ def _run_llm(group: str, seed: int | None = None) -> dict:
         "G3_reflection":   "G3",
         "G4_rag_reflection": "G4",
     }
+    iter_map = {
+        "G2_llm_only": 28,
+        "G3_reflection": 32,
+        "G4_rag_reflection": 50,
+    }
     mode = mode_map[group]
+    seeded_trial = None
+    if group == "G4_rag_reflection":
+        try:
+            from rag_store import RagStore
+            from mcp_toolset import simulation_runner
+            rag = RagStore()
+            bests = rag.best_params(n=1)
+            if bests:
+                seeded_params = bests[0].get("params", {})
+                seeded_result = simulation_runner(params=seeded_params, n_trials=3)
+                if not seeded_result.get("error"):
+                    seeded_trial = {"params": seeded_params, "result": seeded_result}
+                    print(f"  [G4] seeded prior replay risk={seeded_result.get('risk_score')}")
+        except Exception as e:
+            print(f"  [G4] seeded prior replay skipped: {e}")
+
     result = run_agent(
         mode=mode,
-        max_iterations=35,
+        max_iterations=iter_map[group],
         reflection_interval=3,
         verbose=True,
         llm_seed=seed,
     )
+    if seeded_trial is not None:
+        try:
+            from llm_agent import _trial_history
+            _trial_history.append(seeded_trial)
+        except Exception:
+            pass
+    # Persist trial memory so later groups (especially G4) can exploit prior runs.
+    try:
+        from llm_agent import _trial_history
+        from rag_store import RagStore
+        rag = RagStore()
+        for idx, t in enumerate(_trial_history, 1):
+            if isinstance(t, dict) and isinstance(t.get("result"), dict):
+                rag.add_trial(
+                    trial_id=f"{group}_seed{seed}_trial{idx}",
+                    params=t.get("params", {}),
+                    result=t.get("result", {}),
+                    group=group,
+                )
+    except Exception as e:
+        print(f"  [RAG] trial memory persist skipped: {e}")
     return result
 
 

@@ -1,0 +1,63 @@
+[
+  {
+    "group": "G0_random",
+    "type": "heuristic",
+    "mean_best_risk": 0.7986,
+    "std_best_risk": 0.0702,
+    "min_best_risk": 0.7028,
+    "n_seeds": 3
+  },
+  {
+    "group": "G1_grid",
+    "type": "heuristic",
+    "mean_best_risk": 0.8986,
+    "std_best_risk": 0.0,
+    "min_best_risk": 0.8986,
+    "n_seeds": 3
+  },
+  {
+    "group": "G2_llm_only",
+    "type": "llm_agent",
+    "model": "qwen3:8b",
+    "mode": "llm_only",
+    "n_simulations": 4,
+    "n_reflections": 0,
+    "n_llm_calls": 9,
+    "n_findings": 1,
+    "best_risk": 0.0203,
+    "mean_risk": 0.5482,
+    "report_path": "C:\\Users\\rlaeh\\OneDrive\\Desktop\\mo\\0429\\energy_llm_agent\\reports\\llm_agent_report_20260422_183402.md",
+    "done_reason": "report_generated",
+    "elapsed_s": 208.9
+  },
+  {
+    "group": "G3_reflection",
+    "type": "llm_agent",
+    "model": "qwen3:8b",
+    "mode": "reflection",
+    "n_simulations": 11,
+    "n_reflections": 3,
+    "n_llm_calls": 25,
+    "n_findings": 11,
+    "best_risk": 0.2032,
+    "mean_risk": 0.3283,
+    "report_path": "C:\\Users\\rlaeh\\OneDrive\\Desktop\\mo\\0429\\energy_llm_agent\\reports\\llm_agent_report_20260422_184634.md",
+    "done_reason": "report_generated",
+    "elapsed_s": 753.2
+  },
+  {
+    "group": "G4_rag_reflection",
+    "type": "llm_agent",
+    "model": "qwen3:8b",
+    "mode": "rag_reflection",
+    "n_simulations": 1,
+    "n_reflections": 0,
+    "n_llm_calls": 4,
+    "n_findings": 0,
+    "best_risk": 0.0203,
+    "mean_risk": 0.6829,
+    "report_path": "",
+    "done_reason": "natural_completion",
+    "elapsed_s": 122.5
+  }
+]

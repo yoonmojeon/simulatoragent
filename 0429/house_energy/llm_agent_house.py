@@ -421,6 +421,7 @@ Start by calling inspect_scenario(), then optimize systematically.
     n_llm_calls   = 0
     done_reason   = "max_iterations"
     report_path   = ""
+    min_sims_before_report = 12 if mode == "G4" else 5
 
     if verbose:
         print(f"\n{'='*60}")
@@ -479,6 +480,19 @@ Start by calling inspect_scenario(), then optimize systematically.
                     pass
 
             if name == "generate_report":
+                if n_simulations < min_sims_before_report:
+                    result_str = json.dumps({
+                        "error": (
+                            f"Too early to report: {n_simulations} simulations completed, "
+                            f"need at least {min_sims_before_report}."
+                        )
+                    })
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc.id,
+                        "content": result_str[:10000],
+                    })
+                    continue
                 try:
                     r = json.loads(result_str)
                     report_path = r.get("path", "")

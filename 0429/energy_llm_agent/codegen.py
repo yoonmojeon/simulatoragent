@@ -12,7 +12,7 @@ import os
 import sys
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parents[3] / "0422" / "simulatoragent"
+BASE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BASE))
 
 from scenarios import get_scenario
