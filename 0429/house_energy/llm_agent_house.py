@@ -26,6 +26,12 @@ ROOT     = Path(__file__).resolve().parent
 ROOT_ENV = ROOT.parents[1]
 AGENT_ROOT = ROOT.parent / "energy_llm_agent"  # RAG 인프라 공유
 
+
+def _rag_db_path() -> Path:
+    """Return the active RAG DB path for experiment isolation."""
+    override = os.getenv("HOUSE_RAG_DB_PATH", "").strip()
+    return Path(override) if override else AGENT_ROOT / "rag_db"
+
 try:
     from dotenv import load_dotenv
     load_dotenv(ROOT_ENV / ".env")
@@ -223,7 +229,7 @@ def _exec_inspect_scenario(_args: dict) -> str:
 def _exec_query_rag(args: dict) -> str:
     try:
         from rag_store import RagStore
-        store = RagStore(db_path=AGENT_ROOT / "rag_db")
+        store = RagStore(db_path=_rag_db_path())
         result: dict = {"query": args["query"]}
         mode = args.get("mode", "both")
         top_k = args.get("top_k", 5)
@@ -249,7 +255,9 @@ def _exec_run_simulation(args: dict) -> str:
 def _exec_add_to_rag(args: dict) -> str:
     try:
         from rag_store import RagStore
-        store = RagStore(db_path=AGENT_ROOT / "rag_db")
+        if os.getenv("HOUSE_RAG_ADD_DISABLED", "").strip() == "1":
+            return json.dumps({"status": "skipped", "reason": "HOUSE_RAG_ADD_DISABLED"})
+        store = RagStore(db_path=_rag_db_path())
         store.add_trial(args["trial_id"], args["params"], args["result"], group="llm_house")
         return json.dumps({"status": "ok", "trial_id": args["trial_id"]})
     except Exception as e:
