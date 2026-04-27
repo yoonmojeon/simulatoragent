@@ -111,27 +111,91 @@ def simulation_runner(params: dict, n_trials: int = 3) -> dict[str, Any]:
 # ------------------------------------------------------------------
 # 5) 보고서 생성
 # ------------------------------------------------------------------
-def report_generator(goal: str, result: dict, out_path: str) -> dict[str, Any]:
-    """MCP tool: write a compact markdown report."""
+def report_generator(
+    title: str,
+    goal: str,
+    optimal_params: dict,
+    result: dict,
+    analysis: str,
+    out_path: str,
+    findings: list[str] | None = None,
+    trial_history: list[dict[str, Any]] | None = None,
+    generated_code_path: str | None = None,
+) -> dict[str, Any]:
+    """MCP tool: write a full markdown optimization report."""
     risk = result.get("risk_score", "N/A")
     sr = result.get("success_rate", "N/A")
     pwr = result.get("mean_power_kw", "N/A")
     energy = result.get("energy_j", "N/A")
+    findings = findings or []
+    trial_history = trial_history or []
 
     lines = [
-        "# MCP Auto Report",
+        f"# {title}",
         "",
         f"**Goal:** {goal}",
         "",
-        "## Key Metrics",
-        f"| Metric | Value |",
-        f"|--------|-------|",
-        f"| Risk Score | {risk} |",
-        f"| Success Rate | {sr} |",
-        f"| Mean Power kW | {pwr} |",
-        f"| Energy J | {energy} |",
+        "## Executive Summary",
+        "",
+        analysis or "N/A",
+        "",
+        "## Optimal Parameters Found",
+        "",
+        "```json",
+        json.dumps(optimal_params, ensure_ascii=False, indent=2),
+        "```",
+        "",
+        "## Optimal Simulation Result",
+        "",
+        f"- **Risk Score:** {risk}",
+        f"- **Success Rate:** {sr}",
+        f"- **Mean Power:** {pwr} kW",
+        f"- **Energy:** {energy} J",
+        "",
+        "## LLM Analysis Findings",
+        "",
+    ]
+    if findings:
+        for i, finding in enumerate(findings, 1):
+            lines.append(f"**Finding {i}:** {finding}")
+            lines.append("")
+    else:
+        lines.append("No explicit findings were recorded.")
+        lines.append("")
+
+    lines += [
+        "## Experiment Trajectory",
+        "",
+        "| Trial | Risk | Success Rate | Key Params |",
+        "|---|---|---|---|",
+    ]
+    if trial_history:
+        for i, trial in enumerate(trial_history, 1):
+            trial_result = trial.get("result", {})
+            trial_params = trial.get("params", {})
+            flat = [(f"{fmu}.{name}", value) for fmu, params in trial_params.items() for name, value in params.items()]
+            key_params = ", ".join(f"{name}={value}" for name, value in flat[:2]) if flat else "default"
+            lines.append(
+                f"| {i} | {trial_result.get('risk_score', 'N/A')} | "
+                f"{trial_result.get('success_rate', 'N/A')} | {key_params} |"
+            )
+    else:
+        lines.append("| - | N/A | N/A | N/A |")
+
+    lines += [
+        "",
+        "## Code Generation",
+        "",
+        f"Generated runner: `{generated_code_path or 'generated/generated_cosim_runner.py'}`",
+        "",
+        "## RAG Contribution",
+        "",
+        "- Domain vocabulary enabled semantic mapping of engineering terms to FMU variables.",
+        "- Prior trial results provided warm-start parameter recommendations.",
+        "- Online learning stored this run's results for future agent sessions.",
         "",
         "## Full Result",
+        "",
         "```json",
         json.dumps(result, ensure_ascii=False, indent=2),
         "```",

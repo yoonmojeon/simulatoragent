@@ -351,6 +351,33 @@ def _exec_save_finding(args: dict) -> str:
 
 
 def _exec_generate_report(args: dict) -> str:
+    from mcp_toolset import report_generator
+
+    title = args.get("title", "LLM Agent Optimization Report")
+    optimal_params = args.get("optimal_params", {})
+    optimal_result = args.get("optimal_result", {})
+    analysis = args.get("analysis", "")
+
+    ts = time.strftime("%Y%m%d_%H%M%S")
+    out_path = ROOT / "reports" / f"llm_agent_report_{ts}.md"
+    result = report_generator(
+        title=title,
+        goal="Minimize vessel risk_score while maintaining high success_rate under the 420 kW power limit.",
+        optimal_params=optimal_params,
+        result=optimal_result,
+        analysis=analysis,
+        out_path=str(out_path),
+        findings=list(_findings),
+        trial_history=list(_trial_history),
+        generated_code_path=_generated_code_path or "generated/generated_cosim_runner.py",
+    )
+    return json.dumps({
+        "status": "report_generated",
+        "path": result["report_path"],
+        "n_findings": len(_findings),
+        "n_trials_logged": len(_trial_history),
+    }, ensure_ascii=False)
+
     title = args.get("title", "LLM Agent Optimization Report")
     optimal_params = args.get("optimal_params", {})
     optimal_result = args.get("optimal_result", {})
